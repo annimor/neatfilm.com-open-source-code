@@ -45,11 +45,11 @@ package com.neatfilm.framework.view
 		/**
 		 * pool objects in array 
 		 */		
-		protected var pool:Array = [];
+		public var pool:Array = [];
 		/**
 		 * count for in use objects 
 		 */		
-		protected var inUseCount:uint;
+		public var inUseCount:uint;
 		/**
 		 * count for not in use objects 
 		 */		
