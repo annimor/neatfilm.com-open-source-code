@@ -38,7 +38,8 @@ package com.neatfilm.framework.view
 		function get inUse():Boolean;
 		function set inUse(value:Boolean):void;
 		/**
-		 * Clone a new reusable object 
+		 * Clone a new reusable object, as well as some properties.
+		 * Reusable pool will always use first object to make a new object
 		 * @return 
 		 * 
 		 */		
