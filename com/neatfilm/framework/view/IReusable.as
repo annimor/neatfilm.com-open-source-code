@@ -49,5 +49,10 @@ package com.neatfilm.framework.view
 		 * 
 		 */		
 		function reset():void;
+		/**
+		 * destroy for GC 
+		 * 
+		 */		
+		function destroy():void;
 	}
 }
