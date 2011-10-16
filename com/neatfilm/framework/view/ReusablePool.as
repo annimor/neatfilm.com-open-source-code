@@ -151,5 +151,17 @@ package com.neatfilm.framework.view
 			}
 
 		}
+		/**
+		 * destroy objects for GC 
+		 * 
+		 */		
+		public function destroy():void
+		{
+			for (var i:int = 0; i < pool.length; i++) 
+			{
+				(pool[i] as IReusable).destroy();
+			}
+			pool.splice(0);
+		}
 	}
 }
