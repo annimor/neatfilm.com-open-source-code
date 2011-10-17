@@ -27,84 +27,96 @@
 //------------------------------------------------------------------------------
 package com.neatfilm.framework.view
 {
+
 	/**
 	 * Reusable object pool
-	 * 
-	 * Usage: 
+	 *
+	 * Usage:
 	 *  - create a pool instance
 	 *  - set first IReuable object with .reusableObject
 	 *  - obtain object from pool with .getObject() function, object will be reused or clone a new one stored in pool
 	 *  - release an object with .releaseObject() function, .releaseAll() to release all objects
-	 *  - 
-	 *  
+	 *
 	 * @author george
-	 * 
-	 */	
+	 *
+	 */
 	public class ReusablePool
 	{
+		protected var _pool:Array = [];
+		protected var _inUseCount:uint;
 		/**
-		 * pool objects in array 
-		 */		
-		public var pool:Array = [];
-		/**
-		 * count for in use objects 
-		 */		
-		public var inUseCount:uint;
-		/**
-		 * count for not in use objects 
-		 */		
+		 * count for not in use objects
+		 */
 		private var freeCount:uint;
 
 		/**
-		 * set first object 
+		 * pool objects in array
+		 */
+		public function get pool():Array
+		{
+			return _pool;
+		}
+
+		/**
+		 * count for in use objects
+		 */
+		public function get inUseCount():uint
+		{
+			return _inUseCount;
+		}
+
+		/**
+		 * set first object
 		 * @param value
-		 * 
-		 */		
+		 *
+		 */
 		public function set reusableObject(value:IReusable):void
 		{
-			pool.push(value);
+			_pool.push(value);
 			freeCount++;
 		}
+
 		/**
 		 * get largest search range, in case if want to traverse all in use objects.
 		 * Although object can be released from any position of the pool, reuse objects always count from start.
-		 * For example, 100 objects in the pool, if 50 objects in use, search range may about 60 but wouldn't necessary go through the whole array.  
+		 * For example, 100 objects in the pool, if 50 objects in use, search range may about 60 but wouldn't necessary go through the whole array.
 		 * @return largest search range number
-		 * 
+		 *
 		 */
 		public function get range():uint
 		{
 			// find minimum range for in-use objects
-			var len:int = pool.length;
+			var len:int = _pool.length;
 			var n:int = 0;
 			for (var i:int = 0; i < len; i++)
 			{
-				if ((pool[i] as IReusable).inUse)
+				if ((_pool[i] as IReusable).inUse)
 				{
 					n++;
-					if (n >= inUseCount)
+					if (n >= _inUseCount)
 						break;
 				}
 			}
 			i++;
 			return (i <= len) ? i : len;
 		}
+
 		/**
-		 * obtain object from pool 
-		 * @return 
-		 * 
+		 * obtain object from pool
+		 * @return
+		 *
 		 */
 		public function getObject():IReusable
 		{
-			var len:int = pool.length;
+			var len:int = _pool.length;
 			if (freeCount > 0)
 			{
 				freeCount--;
-				inUseCount++;
+				_inUseCount++;
 				for (var i:int = 0; i < len; i++)
 				{
 					// find first no-in-use object
-					var object:IReusable = pool[i];
+					var object:IReusable = _pool[i];
 					if (!object.inUse)
 					{
 						object.inUse = true;
@@ -113,37 +125,39 @@ package com.neatfilm.framework.view
 				}
 			} else
 			{
-				var newObject:IReusable = (pool[0] as IReusable).cloneNewObject();
-				pool.push(newObject);
+				var newObject:IReusable = (_pool[0] as IReusable).cloneNewObject();
+				_pool.push(newObject);
 				newObject.inUse = true;
-				inUseCount++;
+				_inUseCount++;
 				return newObject;
 			}
 			// this should never happen
 			return null;
 		}
+
 		/**
-		 * release object back to pool 
+		 * release object back to pool
 		 * @param object
-		 * 
+		 *
 		 */
 		public function releaseObject(object:IReusable):void
 		{
-			inUseCount--;
+			_inUseCount--;
 			freeCount++;
 			object.inUse = false;
 			object.reset();
 		}
+
 		/**
-		 * release all objects 
-		 * 
+		 * release all objects
+		 *
 		 */
 		public function releaseAll():void
 		{
 			var len:int = range;
 			for (var i:int = 0; i < len; i++)
 			{
-				var object:IReusable = pool[i];
+				var object:IReusable = _pool[i];
 				if (object.inUse)
 				{
 					releaseObject(object);
@@ -151,17 +165,18 @@ package com.neatfilm.framework.view
 			}
 
 		}
+
 		/**
-		 * destroy objects for GC 
-		 * 
-		 */		
+		 * destroy objects for GC
+		 *
+		 */
 		public function destroy():void
 		{
-			for (var i:int = 0; i < pool.length; i++) 
+			for (var i:int = 0; i < _pool.length; i++)
 			{
-				(pool[i] as IReusable).destroy();
+				(_pool[i] as IReusable).destroy();
 			}
-			pool.splice(0);
+			_pool.splice(0);
 		}
 	}
 }
