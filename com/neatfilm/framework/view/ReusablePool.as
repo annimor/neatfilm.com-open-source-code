@@ -47,7 +47,7 @@ package com.neatfilm.framework.view
 		/**
 		 * count for not in use objects
 		 */
-		private var freeCount:uint;
+		protected var freeCount:uint;
 
 		/**
 		 * pool objects in array
@@ -74,6 +74,7 @@ package com.neatfilm.framework.view
 		{
 			_pool.push(value);
 			freeCount++;
+			value.pool = this;
 		}
 
 		/**
@@ -160,10 +161,12 @@ package com.neatfilm.framework.view
 				var object:IReusable = _pool[i];
 				if (object.inUse)
 				{
-					releaseObject(object);
+					object.inUse = false;
+					object.reset();
 				}
 			}
-
+			freeCount = len;
+			_inUseCount = 0;
 		}
 
 		/**

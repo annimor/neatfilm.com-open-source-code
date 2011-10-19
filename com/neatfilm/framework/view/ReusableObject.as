@@ -28,43 +28,56 @@
 package com.neatfilm.framework.view
 {
 
-	public interface IReusable
+	/**
+	 * A simple exmaple reusable object
+	 * @author george
+	 *
+	 */
+	public class ReusableObject implements IReusable
 	{
-		/**
-		 * whether an object in use
-		 * @return
-		 *
-		 */
-		function get inUse():Boolean;
-		function set inUse(value:Boolean):void;
-		/**
-		 * keep pool reference so object could release itself
-		 * @return
-		 *
-		 */
-		function get pool():ReusablePool;
-		function set pool(value:ReusablePool):void;
-		/**
-		 * Release object from pool by itself
-		 */		
-		function release():void;
+		private var _pool:ReusablePool;
+		private var _inUse:Boolean;
 
-		/**
-		 * Clone a new reusable object, as well as some properties.
-		 * Reusable pool will always use first object to make a new object
-		 * @return
-		 *
-		 */
-		function cloneNewObject():IReusable;
-		/**
-		 * reset object for reuse, i.e. clear event listeners, remove from display list.
-		 *
-		 */
-		function reset():void;
-		/**
-		 * destroy for GC
-		 *
-		 */
-		function destroy():void;
+		public function get inUse():Boolean
+		{
+			return _inUse;
+		}
+
+		public function set inUse(value:Boolean):void
+		{
+			_inUse = value;
+		}
+
+		public function get pool():ReusablePool
+		{
+			return _pool;
+		}
+
+		public function set pool(value:ReusablePool):void
+		{
+			_pool = value;
+		}
+
+		public function release():void
+		{
+			_pool.releaseObject(this);
+		}
+
+		public function cloneNewObject():IReusable
+		{
+			var newObject:IReusable = new ReusableObject();
+			newObject.pool = _pool;
+			return newObject;
+		}
+
+		public function reset():void
+		{
+
+		}
+
+		public function destroy():void
+		{
+			_pool = null;
+		}
 	}
 }
