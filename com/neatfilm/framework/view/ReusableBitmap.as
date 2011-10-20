@@ -62,7 +62,6 @@ package com.neatfilm.framework.view
 		public function cloneNewObject():IReusable
 		{
 			var newObject:ReusableBitmap = new ReusableBitmap();
-			newObject.pool = _pool;
 			newObject.bitmapData = bitmapData.clone();
 			return newObject;
 		}

@@ -63,7 +63,6 @@ package com.neatfilm.framework.view
 		public function cloneNewObject():IReusable
 		{
 			var newObject:ReusableSprite = new ReusableSprite();
-			newObject.pool = _pool;
 			return newObject;
 		}
 

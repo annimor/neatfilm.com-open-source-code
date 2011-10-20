@@ -127,6 +127,7 @@ package com.neatfilm.framework.view
 			} else
 			{
 				var newObject:IReusable = (_pool[0] as IReusable).cloneNewObject();
+				newObject.pool = this;
 				_pool.push(newObject);
 				newObject.inUse = true;
 				_inUseCount++;
