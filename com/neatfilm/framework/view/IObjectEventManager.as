@@ -37,6 +37,12 @@ package com.neatfilm.framework.view
 	 */
 	public interface IObjectEventManager
 	{
+		/**
+		 * Register an event, same as addEventListener
+		 * @param type
+		 * @param listener
+		 *
+		 */
 		function registerEvent(type:String, listener:Function):void;
 		/**
 		 * unregister an event, same as removeEventListener
@@ -44,9 +50,5 @@ package com.neatfilm.framework.view
 		 *
 		 */
 		function unregisterEvent(type:String):void;
-	/**
-	 * reset events for reuse owner object
-	 *
-	 */
 	}
 }
