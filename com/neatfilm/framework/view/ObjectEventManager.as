@@ -27,74 +27,85 @@
 //------------------------------------------------------------------------------
 package com.neatfilm.framework.view
 {
-	import flash.display.Sprite;
+	import flash.events.EventDispatcher;
+	import com.neatfilm.framework.debug.Debug;
+	import com.neatfilm.framework.debug.LogType;
 
-	public class ReusableSprite extends Sprite implements IReusable, IObjectEventManager
+	/**
+	 * Simple object event manager, event listeners would be managed by object itself
+	 * For generic purpose and better performance, each event type should have a single listener.
+	 * @author george
+	 *
+	 */
+	public class ObjectEventManager implements IObjectEventManager
 	{
-		private var _pool:ReusablePool;
-		private var _inUse:Boolean;
+		private var eventMap:Object = {};
 
-		private var eventManager:ObjectEventManager;
+		private var _owner:EventDispatcher;
 
-		public function ReusableSprite()
+		/**
+		 * Event manager owner object
+		 * @param value
+		 *
+		 */
+		public function set owner(value:EventDispatcher):void
 		{
-			eventManager = new ObjectEventManager();
-			eventManager.owner = this;
+			_owner = value;
 		}
 
-		public function get inUse():Boolean
-		{
-			return _inUse;
-		}
-
-		public function set inUse(value:Boolean):void
-		{
-			_inUse = value;
-		}
-
-		public function get pool():ReusablePool
-		{
-			return _pool;
-		}
-
-		public function set pool(value:ReusablePool):void
-		{
-			_pool = value;
-		}
-
-		public function release():void
-		{
-			_pool.releaseObject(this);
-		}
-
-		public function cloneNewObject():IReusable
-		{
-			var newObject:ReusableSprite = new ReusableSprite();
-			return newObject;
-		}
-
+		/**
+		 * Register an event, same as addEventListener
+		 * @param type
+		 * @param listener
+		 *
+		 */
 		public function registerEvent(type:String, listener:Function):void
 		{
-			eventManager.registerEvent(type, listener);
+			if (eventMap.hasOwnProperty(type))
+			{
+				if (Debug.debug)
+					Debug.log('Object ' + _owner + ' listen type may conflict: ' + type, LogType.WARNING);
+				_owner.removeEventListener(type, (eventMap[type] as Function));
+			}
+			eventMap[type] = listener;
+			_owner.addEventListener(type, listener);
 		}
 
+		/**
+		 * unregister an event, same as removeEventListener
+		 * @param type
+		 *
+		 */
 		public function unregisterEvent(type:String):void
 		{
-			eventManager.unregisterEvent(type);
+			if (eventMap.hasOwnProperty(type))
+			{
+				_owner.removeEventListener(type, (eventMap[type] as Function));
+				delete eventMap[type];
+			}
 		}
 
+		/**
+		 * reset events for reuse owner object
+		 *
+		 */
 		public function reset():void
 		{
-			if (parent)
-				parent.removeChild(this);
-			eventManager.reset();
+			for (var type:String in eventMap)
+			{
+				_owner.removeEventListener(type, (eventMap[type] as Function));
+				delete eventMap[type];
+			}
 		}
 
+		/**
+		 * destroy event manager, clear all references
+		 *
+		 */
 		public function destroy():void
 		{
-			eventManager.destroy();
 			reset();
-			_pool = null;
+			_owner = null;
 		}
 	}
 }

@@ -25,76 +25,13 @@
 //  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 //  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 //------------------------------------------------------------------------------
-package com.neatfilm.framework.view
+package com.neatfilm.framework.debug
 {
-	import flash.display.Sprite;
 
-	public class ReusableSprite extends Sprite implements IReusable, IObjectEventManager
+	public class LogType
 	{
-		private var _pool:ReusablePool;
-		private var _inUse:Boolean;
-
-		private var eventManager:ObjectEventManager;
-
-		public function ReusableSprite()
-		{
-			eventManager = new ObjectEventManager();
-			eventManager.owner = this;
-		}
-
-		public function get inUse():Boolean
-		{
-			return _inUse;
-		}
-
-		public function set inUse(value:Boolean):void
-		{
-			_inUse = value;
-		}
-
-		public function get pool():ReusablePool
-		{
-			return _pool;
-		}
-
-		public function set pool(value:ReusablePool):void
-		{
-			_pool = value;
-		}
-
-		public function release():void
-		{
-			_pool.releaseObject(this);
-		}
-
-		public function cloneNewObject():IReusable
-		{
-			var newObject:ReusableSprite = new ReusableSprite();
-			return newObject;
-		}
-
-		public function registerEvent(type:String, listener:Function):void
-		{
-			eventManager.registerEvent(type, listener);
-		}
-
-		public function unregisterEvent(type:String):void
-		{
-			eventManager.unregisterEvent(type);
-		}
-
-		public function reset():void
-		{
-			if (parent)
-				parent.removeChild(this);
-			eventManager.reset();
-		}
-
-		public function destroy():void
-		{
-			eventManager.destroy();
-			reset();
-			_pool = null;
-		}
+		public static const INFO:uint = 0;
+		public static const WARNING:uint = 1;
+		public static const ERROR:uint = 2;
 	}
 }

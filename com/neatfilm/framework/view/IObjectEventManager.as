@@ -27,74 +27,26 @@
 //------------------------------------------------------------------------------
 package com.neatfilm.framework.view
 {
-	import flash.display.Sprite;
+	import flash.events.EventDispatcher;
 
-	public class ReusableSprite extends Sprite implements IReusable, IObjectEventManager
+	/**
+	 * Simple object event manager, event listeners would be managed by object itself
+	 * For generic purpose and better performance, each event type should have a single listener.
+	 * @author george
+	 *
+	 */
+	public interface IObjectEventManager
 	{
-		private var _pool:ReusablePool;
-		private var _inUse:Boolean;
-
-		private var eventManager:ObjectEventManager;
-
-		public function ReusableSprite()
-		{
-			eventManager = new ObjectEventManager();
-			eventManager.owner = this;
-		}
-
-		public function get inUse():Boolean
-		{
-			return _inUse;
-		}
-
-		public function set inUse(value:Boolean):void
-		{
-			_inUse = value;
-		}
-
-		public function get pool():ReusablePool
-		{
-			return _pool;
-		}
-
-		public function set pool(value:ReusablePool):void
-		{
-			_pool = value;
-		}
-
-		public function release():void
-		{
-			_pool.releaseObject(this);
-		}
-
-		public function cloneNewObject():IReusable
-		{
-			var newObject:ReusableSprite = new ReusableSprite();
-			return newObject;
-		}
-
-		public function registerEvent(type:String, listener:Function):void
-		{
-			eventManager.registerEvent(type, listener);
-		}
-
-		public function unregisterEvent(type:String):void
-		{
-			eventManager.unregisterEvent(type);
-		}
-
-		public function reset():void
-		{
-			if (parent)
-				parent.removeChild(this);
-			eventManager.reset();
-		}
-
-		public function destroy():void
-		{
-			eventManager.destroy();
-			reset();
-			_pool = null;
-		}
+		function registerEvent(type:String, listener:Function):void;
+		/**
+		 * unregister an event, same as removeEventListener
+		 * @param type
+		 *
+		 */
+		function unregisterEvent(type:String):void;
+	/**
+	 * reset events for reuse owner object
+	 *
+	 */
 	}
 }

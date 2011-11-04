@@ -25,76 +25,34 @@
 //  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 //  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 //------------------------------------------------------------------------------
-package com.neatfilm.framework.view
+package com.neatfilm.framework.debug
 {
-	import flash.display.Sprite;
 
-	public class ReusableSprite extends Sprite implements IReusable, IObjectEventManager
+	public class Debug
 	{
-		private var _pool:ReusablePool;
-		private var _inUse:Boolean;
+		public static var debug:Boolean = true;
 
-		private var eventManager:ObjectEventManager;
-
-		public function ReusableSprite()
+		public static function log(message:String, type:uint):void
 		{
-			eventManager = new ObjectEventManager();
-			eventManager.owner = this;
+			var date:Date = new Date();
+			trace(date.toTimeString() + ' [' + getType(type) + '] ' + message);
 		}
 
-		public function get inUse():Boolean
+		private static function getType(type:uint):String
 		{
-			return _inUse;
-		}
-
-		public function set inUse(value:Boolean):void
-		{
-			_inUse = value;
-		}
-
-		public function get pool():ReusablePool
-		{
-			return _pool;
-		}
-
-		public function set pool(value:ReusablePool):void
-		{
-			_pool = value;
-		}
-
-		public function release():void
-		{
-			_pool.releaseObject(this);
-		}
-
-		public function cloneNewObject():IReusable
-		{
-			var newObject:ReusableSprite = new ReusableSprite();
-			return newObject;
-		}
-
-		public function registerEvent(type:String, listener:Function):void
-		{
-			eventManager.registerEvent(type, listener);
-		}
-
-		public function unregisterEvent(type:String):void
-		{
-			eventManager.unregisterEvent(type);
-		}
-
-		public function reset():void
-		{
-			if (parent)
-				parent.removeChild(this);
-			eventManager.reset();
-		}
-
-		public function destroy():void
-		{
-			eventManager.destroy();
-			reset();
-			_pool = null;
+			switch (type)
+			{
+				case LogType.INFO:
+					return 'INFO';
+					break;
+				case LogType.WARNING:
+					return 'WARNING';
+					break;
+				case LogType.ERROR:
+					return 'ERROR';
+					break;
+			}
+			return '';
 		}
 	}
 }
